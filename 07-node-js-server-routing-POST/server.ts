@@ -1,5 +1,4 @@
 import http, { IncomingMessage, ServerResponse, Server } from 'http'
-import { ApiRouter } from './router/apiRouter'
 
 const hostname: string = '127.0.0.1'
 const port: number = 5000
@@ -9,7 +8,21 @@ const server: Server = http.createServer(
 		response.statusCode = 200
 		response.setHeader('content-Type', 'text/html')
 
-		ApiRouter.mapRouter(request, response)
+		if (request.url === '/user' && request.method === 'POST') {
+			try {
+				let body: any = ''
+				request
+					.on('data', (chunk) => {
+						body += chunk
+					})
+					.on('end', () => {
+						let formData = JSON.parse(body)
+						response.end(`<pre>${JSON.stringify(formData)}</pre>`)
+					})
+			} catch (e) {
+				console.error(e)
+			}
+		}
 	}
 )
 
